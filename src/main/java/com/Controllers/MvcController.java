@@ -1,22 +1,23 @@
 package com.Controllers;
 
+import com.Model.ListOfUsers;
 import com.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Controller
+@RequestMapping("/users")
 public class MvcController {
     @Autowired
     RestTemplate restTemplate;
-    @GetMapping("/")
-    public String Main()
-    {
-        return "Main";
-    }
     @GetMapping("/find")
     public String FindUser(Model model)
     {
@@ -27,18 +28,29 @@ public class MvcController {
     public String User(@RequestParam(name = "username", required = false) String username, Model model)
     {
         User user = restTemplate.getForObject("http://localhost:8090/user?username=" + username + "", User.class);
-
-
         model.addAttribute("user", user);
         return "User";
     }
-    /*@GetMapping("/users")
+    @GetMapping("")
     public String Users(Model model)
     {
-        HttpEntity<List<User>> request = new HttpEntity<>(new List<User>());
-        ResponseEntity<YourResponseClass[]> responses =
-                restTemplate.postForEntity("your URL", request , YourResponseClass[].class );
-        model.addAttribute("users", new User());
-        return "Find";
-    }*/
+        ListOfUsers listOfUsers = restTemplate.getForObject("http://localhost:8090/users", ListOfUsers.class);
+        model.addAttribute("users", listOfUsers.getUserList());
+        return "Users";
+    }
+    @GetMapping("/{id}/edit")
+    public String FindUser(Model model, @PathVariable Long id)
+    {
+        User user  = restTemplate.getForObject("http://localhost:8090/user/{id}", User.class, id);
+        model.addAttribute("user", user);
+        return "User";
+    }
+    @PostMapping("/{id}/delete")
+    public String DeleteUser(Model model, @PathVariable Long id)
+    {
+        HttpEntity<Long> entity = new HttpEntity<Long>(id);
+        ResponseEntity resp = restTemplate.exchange("http://localhost:8090/user/{id}", HttpMethod.DELETE, entity, User.class, id);
+        String string;
+        return "redirect:/users";
+    }
 }
