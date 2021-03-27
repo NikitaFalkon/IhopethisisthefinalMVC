@@ -10,14 +10,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("/users")
 public class MvcController {
     @Autowired
     RestTemplate restTemplate;
+
     @GetMapping("/find")
     public String FindUser(Model model)
     {
@@ -50,7 +50,6 @@ public class MvcController {
     {
         HttpEntity<Long> entity = new HttpEntity<Long>(id);
         ResponseEntity resp = restTemplate.exchange("http://localhost:8090/user/{id}", HttpMethod.DELETE, entity, User.class, id);
-        String string;
         return "redirect:/users";
     }
 }
