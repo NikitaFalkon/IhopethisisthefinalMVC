@@ -2,6 +2,9 @@ package com.Controllers;
 
 import com.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +25,23 @@ public class LoginController {
     @PostMapping("/login")
     public String LoginG(@RequestParam(name ="username", required = false) String username, @RequestParam(name ="password", required = false) String password, Model model)
     {
-        RedirectView resp = restTemplate.getForObject("http://localhost:8090/login?username="+username+"&password="+password+"",  RedirectView.class);
-        return "redirect:/"+resp+"";
+        ResponseEntity resp = restTemplate.getForObject("http://localhost:8090/login?username="+username+"&password="+password+"",  ResponseEntity.class);
+        System.out.println("i tak");
+        return "redirect:/users";
     }
+    @GetMapping("/create")
+    public String Create(Model model)
+    {
+        model.addAttribute("user", new User());
+        return "Create";
+    }
+    @PostMapping("/create")
+    public String Creating(@RequestParam(name ="username", required = false) String username, @RequestParam(name ="password", required = false) String password, Model model)
+    {
+        HttpEntity<String> entity = new HttpEntity<String>(username);
+        ResponseEntity resp = restTemplate.exchange("http://localhost:8090/create?username={username}&password="+password+"", HttpMethod.POST, entity,  ResponseEntity.class, username);
+
+        return "redirect:/users";
+    }
+
 }
