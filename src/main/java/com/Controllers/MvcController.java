@@ -27,7 +27,7 @@ public class MvcController {
     @GetMapping("/finding")
     public String User(@RequestParam(name = "username", required = false) String username, Model model)
     {
-        User user = restTemplate.getForObject("http://localhost:8090/user?username=" + username + "", User.class);
+        User user = restTemplate.getForObject("http://localhost:8090/user?username=" + username + "&file=", User.class);
         model.addAttribute("user", user);
         return "User";
     }

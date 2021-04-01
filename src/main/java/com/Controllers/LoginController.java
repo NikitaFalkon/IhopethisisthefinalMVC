@@ -1,6 +1,7 @@
 package com.Controllers;
 
 import com.Model.User;
+import com.dto.AuthenticationRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -25,8 +26,12 @@ public class LoginController {
     @PostMapping("/login")
     public String LoginG(@RequestParam(name ="username", required = false) String username, @RequestParam(name ="password", required = false) String password, Model model)
     {
-        ResponseEntity resp = restTemplate.getForObject("http://localhost:8090/login?username="+username+"&password="+password+"",  ResponseEntity.class);
-        System.out.println("i tak");
+        //ResponseEntity resp = restTemplate.getForObject("http://localhost:8090/login?username="+username+"&password="+password+"",  ResponseEntity.class);
+        AuthenticationRequestDto user = new AuthenticationRequestDto(username, password);
+        //HttpEntity<AuthenticationRequestDto> entity = new HttpEntity<AuthenticationRequestDto>(user);
+        ResponseEntity resp = restTemplate.getForObject("http://localhost:8090/login?username="+username+"&password="+password+"", ResponseEntity.class);
+        ResponseEntity resp1 = restTemplate.getForObject("http://localhost:8060/login?user="+username+"", ResponseEntity.class);
+     //   ResponseEntity resp = restTemplate.exchange("http://localhost:8090/login", HttpMethod.GET, entity, ResponseEntity.class);
         return "redirect:/users";
     }
     @GetMapping("/create")
